@@ -13,6 +13,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Uses socket.SOCK_
     while True:
       data = conn.recv() # Receive upto 1024 buffersize bytes from the socket
       if not data:
-        break
+        break # Close the connection is an empty bytes object is returned
       conn.sendall(data) # Send a data string to the socket
 
