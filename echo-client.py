@@ -1,3 +1,5 @@
+# https://realpython.com/python-sockets/
+
 import socket
 
 HOST = '127.0.0.1' # The server's hostname or IP address
@@ -8,4 +10,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Uses socket.SOCK_
   s.sendall(b'Hello, world') # Send a data string to the socket
   data = s.recv(1024) # Receive upto 1024 bytes from socket
 
-print("Data string received: ", repr(data)) # returns canonical string representation of object
+print("Data string received:", repr(data)) # returns canonical string representation of object

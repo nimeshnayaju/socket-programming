@@ -1,3 +1,5 @@
+#https://realpython.com/python-sockets/
+
 import socket
 
 HOST = '127.0.0.1' # Standard loopback interface address (localhost)
@@ -9,9 +11,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Uses socket.SOCK_
   conn, addr = s.accept() # Wait for an incoming connection and return the new socket represeting the connection and the address of the client
 
   with conn:
-    print('Client Address: ', addr)
+    print('Client Address:', addr)
     while True:
-      data = conn.recv() # Receive upto 1024 buffersize bytes from the socket
+      data = conn.recv(1024) # Receive upto 1024 buffersize bytes from the socket
       if not data:
         break # Close the connection is an empty bytes object is returned
       conn.sendall(data) # Send a data string to the socket
