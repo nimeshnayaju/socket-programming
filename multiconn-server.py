@@ -7,8 +7,6 @@ import sys
 
 sel = selectors.DefaultSelector()
 
-
-
 def accept_wrapper(sock): # A function to get the new object and register it with selector
   conn, addr = sock.accept()
   print("Accepted connection from:", addr)
