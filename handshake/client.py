@@ -26,7 +26,7 @@ def receive_message():
 
 def send_message():
   while True:
-    msg = input("Enter message: ")
+    msg = raw_input("[>] YOUR MESSAGE : ")
     en = AESKey.encrypt(padding(msg))
     server.send(str(en))
     if msg == FLAG_QUIT:
@@ -54,7 +54,7 @@ if __name__ == "__main__":
   print(public)
   print("\n", private)
   
-  host = input("Host: ")
+  host = raw_input("Host : ")
   port = int(input("Port: "))
 
   with open("private.txt", "w"):
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     serverPublic = split[1]
     print("Server's public key: " + serverPublic)
     # decrypt the keys
-    decrypted = RSA.importKey(private).decrypt(eval(toDecrypt.replace("\r\n", "")))
+    decrypted = RSA.importKey(private).decrypt(eval(toDecrypt.replace("\r", '\\r').replace('\n','\\n')))
     splittedDecrypt = decrypted.split(":")
     eightByte = splittedDecrypt[0]
     hashOfEight = splittedDecrypt[1]
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
       if(serverMsg == FLAG_READY):
         print("Server is ready to communicate\n")
-        serverMsg = input("ENTER YOUR NAME: ")
+        serverMsg = raw_input("\n[>] ENTER YOUR NAME : ")
         server.send(serverMsg)
         threading_rec = threading.Thread(target=receive_message)
         threading_rec.start()

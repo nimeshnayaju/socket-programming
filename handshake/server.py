@@ -3,19 +3,10 @@ import os
 import signal
 import threading
 import hashlib
-import fcntl
 import struct
 from Crypto import Random
 import Crypto.Cipher.AES as AES
 from Crypto.PublicKey import RSA
-
-def get_ip_address(ifname):
-  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  return socket.inet_ntoa(fcntl.ioctl(
-    s.fileno(),
-    0x8915,
-    struct.pack('256s', ifname[:15])
-  )[20:24])
 
 def remove_padding(s):
   return s.replace("`", "")
@@ -82,7 +73,17 @@ def connection_setup():
         print("Public key and public hash did not match")
         client.close()
   
-def send_message(uname, socketClient, AESk):
+def send_message(socketClient, AESk):
+  while True:
+    msg = raw_input("\n[>] ENTER YOUR MESSAGE : ")
+    en = AESk.encrypt(padding(msg))
+    socketClient.send(str(en))
+    if msg == FLAG_QUIT:
+        os.kill(os.getpid(), signal.SIGKILL)
+    else:
+        print("\n[!] Your encrypted message \n" + en)
+
+def broadcast_usr(uname, socketClient, AESk):
   while True:
     try:
       data = socketClient.recv(1024)
@@ -90,11 +91,11 @@ def send_message(uname, socketClient, AESk):
       if data:
         data = remove_padding(AESk.decrypt(data))
         if data == FLAG_QUIT:
-          print("\n" + uname + " left the chat")
+          print("\n" + uname + " left the conversation")
         else:
           b_usr(socketClient, uname, data)
-          print("\n[!] " + uname + " SAID " + data)
-          print("\n[!] Client's encrypted message\n")
+          print("\n", uname, " SAID:" , data)
+          print("\n[!] Client's encrypted message\n" + en)
     except Exception as x:
       print(x.message)
       break
@@ -148,20 +149,20 @@ if(__name__ == "__main__"):
   
   check = False
   print("[1] Auto connect with braodcast IP & PORT\n[2] Manually enter IP & PORT\n")
-  ask = input("[>]")
+  ask = raw_input("[>] ")
   if ask == YES:
-    host = get_ip_address("wlp2s0")
+    host = "127.0.0.1"
     port = 8080
   elif ask == NO:
     host = input("Host: ")
     port = int(input("Port: "))
   else:
     print("[!] Invalid selection")
-    os.kill(os.getpid(), signal.SIGKILL)
+    os.kill(os.getpid(), signal.SIGKILL) #SIGTERM 
 
-  print("\n" + public + "\n" + private)
+  print("\n",public,"\n\n",private)
   print("Eight byte session key in hash: " + session)
-  print("Server IP: " + host + " PORT: " + str(port))
+  print("Server IP: " + host + " & PORT: " + str(port))
 
   server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -172,7 +173,7 @@ if(__name__ == "__main__"):
   # Accept clients
   threading_accept = threading.Thread(target=connection_setup)
   threading_accept.start()
-  
+
 
 
       
